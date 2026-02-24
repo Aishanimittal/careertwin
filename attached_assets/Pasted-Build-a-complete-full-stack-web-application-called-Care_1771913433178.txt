@@ -1,0 +1,44 @@
+Build a complete full-stack web application called "CareerTwin" for career guidance of technical students (CS/IT background). The app helps users predict suitable career paths, analyze skill gaps, and get a personalized long-term learning roadmap with progression stages (Entry → Mid → Senior level).
+
+Strict requirements from my project specification:
+
+1. Project Overview & Objectives
+- Users input: CGPA (academic), technical skills (e.g., Python, SQL, Java – as comma-separated or multi-select), interests/domain (e.g., AI, Web Dev, Data Science), career goals (text), certifications/projects (text).
+- Outputs: 
+  - Predicted career path (e.g., Data Scientist, Software Engineer) with confidence %
+  - Skill gaps (matching skills vs missing skills)
+  - Long-term visualization: Entry-level (0-3 years), Mid-level (4-8 years), Senior-level (9+ years) with salary progression (e.g., 5-8 LPA → 10-15 LPA → 20+ LPA) and growth trends
+  - Recommended learning roadmap (courses, certifications, projects) to fill gaps and progress
+- Personalization + explainability: Show why the career was predicted (based on skills/academics/interests), confidence level, matching/missing skills
+- Addresses gaps: All-in-one platform (prediction + gaps + roadmap), long-term growth simulation, not just immediate suggestions
+
+2. Tech Stack (must follow exactly)
+- Frontend: React.js (with HTML/CSS/JS components) – clean, responsive UI with form for inputs and dashboard for results
+- Backend: FastAPI (Python) – REST APIs (e.g., /predict endpoint)
+- Machine Learning: Scikit-learn – use Random Forest as primary model (also support Decision Tree, KNN, SVM for comparison if possible). Train/load a pre-trained model or simple example model on career prediction.
+- Database: SQLite (for simplicity) or MySQL – implement ER diagram entities:
+  - User (PK: user_id, name, email, cgpa, interests, goals, password hash)
+  - Skills (PK: skill_id, FK: user_id, skill_name, skill_level)
+  - Career (PK: career_id, career_name, domain, avg_salary_entry, growth_rate)
+  - Prediction (PK: prediction_id, FK: user_id, FK: career_id, accuracy_score/confidence, date)
+  - Roadmap (PK: roadmap_id, FK: career_id, courses, certifications, projects, learning_path)
+- Deployment: Prepare for Render / Heroku / Replit deployment (include requirements.txt, Procfile if needed)
+
+3. Core Features to Implement
+- User registration/login (simple, store in DB)
+- Profile input form (CGPA slider/input, skills multi-select or text, interests dropdown, goals text, certifications text)
+- POST /predict API: Receive JSON input → preprocess → run ML prediction → compute gaps/roadmap → return JSON with career, confidence, gaps list, roadmap list, progression stages (Entry/Mid/Senior with salary/trends)
+- Dashboard page: Show results visually (bar chart for confidence, list/table for gaps, timeline/stepper for progression, bullet list for roadmap)
+- Use a simple pre-trained or example ML model (Random Forest on sample data like GPA + skills → career). Include a small careers.json or in-memory data for required skills per career (e.g., Data Scientist: ["Python", "ML", "Statistics"]).
+- Rule-based skill gap: Compare user skills (set) vs required skills for predicted career → show missing ones + roadmap suggestions
+
+4. Additional Instructions for Replit Agent/Ghostwriter
+- Create project structure: /frontend (React app), /backend (FastAPI), /ml (notebooks or scripts for model training), /data (sample CSV/JSON)
+- Use sample data: Include a small CSV or JSON with example users/careers (e.g., from CS student career prediction style)
+- Make it runnable in Replit: Separate frontend/backend if needed, but prefer single Repl with both if possible
+- Add comments in code explaining each part (for my project documentation)
+- Make UI modern/clean (use Tailwind CSS or basic Bootstrap if easy)
+- Handle CORS for frontend-backend communication
+- Bonus: Add Matplotlib/Plotly export for model evaluation graphs (save as image or show in dashboard)
+
+Start building now. First create the project structure, then backend with FastAPI and ML integration, then React frontend, then connect them. Ask me for clarifications if needed, but try to make it complete and deployable.
