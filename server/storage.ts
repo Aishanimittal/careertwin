@@ -1,7 +1,4 @@
-import { db } from "./db";
-import { users, skills, careers, predictions, roadmaps } from "@shared/schema";
 import type { InsertUser, User, InsertSkill, Skill, InsertCareer, Career, InsertPrediction, Prediction, InsertRoadmap, Roadmap, UserProfileUpdate } from "@shared/schema";
-import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: number): Promise<User | undefined>;

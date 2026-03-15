@@ -1,0 +1,14 @@
+{
+  "name": "career-predictor-simple",
+  "version": "1.0.0",
+  "description": "A simplified career prediction app for second-year students",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": ["career", "prediction", "education"],
+  "author": "Second Year Student",
+  "license": "MIT"
+}</content>
+<parameter name="filePath">c:\Users\admin\OneDrive\Desktop\careerTwin 3\Care-Hub\package-simple.json

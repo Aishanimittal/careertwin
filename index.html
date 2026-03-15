@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerTwin </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 CareerTwin</h1>
+            <p>Discover your ideal career path based on your academic performance and skills</p>
+        </div>
+
+        <div class="form-section">
+            <div id="error-message" class="error" style="display: none;"></div>
+
+            <form id="career-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="cgpa">CGPA (Grade Point Average)</label>
+                        <div class="input-icon">
+                            <input type="number" id="cgpa" min="0" max="10" step="0.1" placeholder="Enter your CGPA (e.g., 8.5)" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-group-full">
+                        <label>Skills & Technologies</label>
+                        <div class="skills-section">
+                            <div class="skills-input">
+                                <input type="text" id="skill-input" placeholder="Enter a skill (e.g., Python, JavaScript, SQL)">
+                                <button type="button" class="add-skill-btn" onclick="addSkill()">Add Skill</button>
+                            </div>
+                            <div id="skills-list" class="skills-list"></div>
+                            <div style="margin-top: 1rem;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">💡 Quick Add:</div>
+                                <div class="demo-skills">
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('Python')">Python</button>
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('JavaScript')">JavaScript</button>
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('SQL')">SQL</button>
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('React')">React</button>
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('Machine Learning')">ML</button>
+                                    <button type="button" class="demo-skill-btn" onclick="addSkillFromDemo('Data Analysis')">Data Analysis</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="predict-btn">🔮 Predict My Career Path</button>
+            </form>
+        </div>
+
+        <div class="result-section" id="result-section">
+            <div class="result-header">
+                <h2 class="result-title" id="career-title">Your Career Prediction</h2>
+                <p class="result-subtitle">Based on your academic performance and skills</p>
+            </div>
+
+            <div class="result-grid">
+                <div class="result-card">
+                    <div class="card-header">
+                        <span class="card-icon">🎯</span>
+                        <h3 class="section-title">Career Match Confidence</h3>
+                    </div>
+                    <div class="confidence-section">
+                        <div class="confidence-label">How well you match this career</div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" id="confidence-fill"></div>
+                        </div>
+                        <div class="confidence-value" id="confidence-text">0%</div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h3 class="section-title">Skills Analysis</h3>
+                    </div>
+                    <div class="skills-grid">
+                        <div class="skill-category">
+                            <h4>✅ <span style="color: var(--success-color)">Matching Skills</span></h4>
+                            <div id="matching-skills"></div>
+                        </div>
+                        <div class="skill-category skill-missing">
+                            <h4>❌ <span style="color: var(--error-color)">Skills to Learn</span></h4>
+                            <div id="missing-skills"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <div class="card-header">
+                        <span class="card-icon">🛣️</span>
+                        <h3 class="section-title">Career Roadmap</h3>
+                    </div>
+                    <div class="roadmap" id="roadmap"></div>
+                </div>
+
+                <div class="result-card">
+                    <div class="card-header">
+                        <span class="card-icon">💰</span>
+                        <h3 class="section-title">Salary Information</h3>
+                    </div>
+                    <div id="salary-info"></div>
+                </div>
+
+                <div class="result-card">
+                    <div class="card-header">
+                        <span class="card-icon">📊</span>
+                        <h3 class="section-title">Dataset Information</h3>
+                    </div>
+                    <div class="dataset-info">
+                        <div class="dataset-title">Data Source & Statistics</div>
+                        <div class="dataset-stats">
+                            <div class="stat-item">
+                                <span class="stat-value" id="dataset-count">Loading...</span>
+                                <div class="stat-label">Records</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value" id="careers-count">Loading...</span>
+                                <div class="stat-label">Careers</div>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">2023</span>
+                                <div class="stat-label">Updated</div>
+                            </div>
+                        </div>
+                        <div class="loading-status" id="loading-status">🔄 Loading career data...</div>
+                        <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+                            <strong>Data Source:</strong> Kaggle Career Dataset<br>
+                            <em>Real salary data from actual job market</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let skills = [];
+        let careerData = {};
+        let dataset = [];
+
+        // Load Kaggle dataset
+        async function loadDataset() {
+            try {
+                const response = await fetch('./career-dataset.json');
+                dataset = await response.json();
+
+                // Process dataset into careerData format
+                careerData = {};
+                const careerGroups = {};
+
+                // Group by job title
+                dataset.forEach(job => {
+                    if (!careerGroups[job.job_title]) {
+                        careerGroups[job.job_title] = [];
+                    }
+                    careerGroups[job.job_title].push(job);
+                });
+
+                // Create career data structure
+                Object.keys(careerGroups).forEach(career => {
+                    const jobs = careerGroups[career];
+                    const avgEntrySalary = Math.round(jobs.reduce((sum, job) => sum + job.entry_salary_usd, 0) / jobs.length);
+                    const avgMidSalary = Math.round(jobs.reduce((sum, job) => sum + job.mid_salary_usd, 0) / jobs.length);
+                    const avgSeniorSalary = Math.round(jobs.reduce((sum, job) => sum + job.senior_salary_usd, 0) / jobs.length);
+
+                    // Get all unique skills from this career
+                    const allSkills = [...new Set(jobs.flatMap(job => job.required_skills))];
+
+                    careerData[career] = {
+                        requiredSkills: allSkills,
+                        minCgpa: career.includes('AI') || career.includes('Machine Learning') ? 8.0 :
+                                career.includes('Data Scientist') ? 7.5 :
+                                career.includes('DevOps') || career.includes('Cybersecurity') ? 7.0 : 6.5,
+                        salary: `$${(avgEntrySalary/1000).toFixed(0)}k-$${(avgMidSalary/1000).toFixed(0)}k USD`,
+                        entrySalary: avgEntrySalary,
+                        midSalary: avgMidSalary,
+                        seniorSalary: avgSeniorSalary,
+                        industryGrowth: jobs[0].industry_growth,
+                        roadmap: generateRoadmap(career, allSkills)
+                    };
+                });
+
+                // Verify data structure
+                const sampleCareer = Object.keys(careerData)[0];
+                if (sampleCareer) {
+                    console.log('Sample career data:', careerData[sampleCareer]);
+                }
+
+                // Update dataset info display
+                document.getElementById('dataset-count').textContent = dataset.length;
+                document.getElementById('careers-count').textContent = Object.keys(careerData).length;
+
+                // Hide loading status
+                const loadingStatus = document.getElementById('loading-status');
+                if (loadingStatus) {
+                    loadingStatus.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error loading dataset:', error);
+                // Fallback to original data if dataset fails to load
+                careerData = {
+                    "Data Scientist": {
+                        requiredSkills: ["Python", "SQL", "Machine Learning", "Statistics", "Data Visualization"],
+                        minCgpa: 7.5,
+                        salary: "$70k-$130k USD",
+                        entrySalary: 70000,
+                        midSalary: 130000,
+                        seniorSalary: 200000,
+                        industryGrowth: "High",
+                        roadmap: ["Learn Python basics", "Master SQL", "Study Statistics", "Learn ML algorithms", "Practice with datasets", "Build portfolio"]
+                    },
+                    "Software Engineer": {
+                        requiredSkills: ["Java", "Python", "Data Structures", "Algorithms", "Git"],
+                        minCgpa: 6.5,
+                        salary: "$65k-$110k USD",
+                        entrySalary: 65000,
+                        midSalary: 110000,
+                        seniorSalary: 180000,
+                        industryGrowth: "Medium",
+                        roadmap: ["Learn programming", "Master DSA", "Study System Design", "Learn Git", "Build applications", "Contribute to open source"]
+                    }
+                };
+
+                // Update dataset info for fallback
+                document.getElementById('dataset-count').textContent = '2 (fallback)';
+                document.getElementById('careers-count').textContent = '2';
+
+                // Hide loading status
+                const loadingStatus = document.getElementById('loading-status');
+                if (loadingStatus) {
+                    loadingStatus.style.display = 'none';
+                }
+            }
+        }
+
+        function generateRoadmap(career, skills) {
+            const baseRoadmap = [
+                "Learn programming fundamentals",
+                "Build foundational projects",
+                "Study core concepts and best practices",
+                "Work on real-world applications",
+                "Contribute to open source or team projects",
+                "Build comprehensive portfolio and network"
+            ];
+
+            // Customize roadmap based on career type
+            if (career.includes('Data') || career.includes('AI') || career.includes('Machine Learning')) {
+                return [
+                    "Learn Python and basic programming",
+                    "Master mathematics and statistics",
+                    "Study machine learning algorithms",
+                    "Practice with real datasets",
+                    "Learn data visualization tools",
+                    "Build ML portfolio projects"
+                ];
+            } else if (career.includes('Frontend') || career.includes('Full Stack')) {
+                return [
+                    "Learn HTML, CSS, and JavaScript",
+                    "Master frontend frameworks (React/Vue)",
+                    "Study responsive design and UX",
+                    "Learn version control and deployment",
+                    "Build full-stack applications",
+                    "Create portfolio website"
+                ];
+            } else if (career.includes('Backend') || career.includes('DevOps')) {
+                return [
+                    "Learn server-side programming",
+                    "Master databases and APIs",
+                    "Study system design and architecture",
+                    "Learn cloud platforms and deployment",
+                    "Practice with microservices",
+                    "Focus on security and scalability"
+                ];
+            }
+
+            return baseRoadmap;
+        }
+
+        // Initialize dataset on page load
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadDataset();
+        });
+
+        function addSkill() {
+            const skillInput = document.getElementById('skill-input');
+            const skill = skillInput.value.trim();
+
+            if (skill && !skills.includes(skill)) {
+                skills.push(skill);
+                updateSkillsDisplay();
+                skillInput.value = '';
+            }
+        }
+
+        function addSkillFromDemo(skillName) {
+            if (!skills.includes(skillName)) {
+                skills.push(skillName);
+                updateSkillsDisplay();
+            }
+        }
+
+        function removeSkill(skillToRemove) {
+            skills = skills.filter(skill => skill !== skillToRemove);
+            updateSkillsDisplay();
+        }
+
+        function updateSkillsDisplay() {
+            const skillsList = document.getElementById('skills-list');
+            skillsList.innerHTML = skills.map(skill =>
+                `<span class="skill-tag">${skill} <span class="remove" onclick="removeSkill('${skill}')">×</span></span>`
+            ).join('');
+        }
+
+        function predictCareer(cgpa, userSkills) {
+            let careerScores = [];
+
+            for (const [career, data] of Object.entries(careerData)) {
+                // Calculate skill match score
+                const matchingSkills = data.requiredSkills.filter(skill =>
+                    userSkills.some(userSkill =>
+                        userSkill.toLowerCase().includes(skill.toLowerCase()) ||
+                        skill.toLowerCase().includes(userSkill.toLowerCase())
+                    )
+                );
+
+                const skillScore = matchingSkills.length / data.requiredSkills.length;
+
+                // CGPA factor (normalized)
+                const cgpaScore = Math.min(cgpa / 10, 1);
+
+                // Combined score
+                const totalScore = (skillScore * 0.7) + (cgpaScore * 0.3);
+
+                careerScores.push({
+                    career: career,
+                    score: totalScore,
+                    confidence: Math.round(totalScore * 100),
+                    matchingSkills: matchingSkills,
+                    missingSkills: data.requiredSkills.filter(skill => !matchingSkills.includes(skill)),
+                    roadmap: data.roadmap,
+                    salary: data.salary,
+                    entrySalary: data.entrySalary,
+                    midSalary: data.midSalary,
+                    seniorSalary: data.seniorSalary,
+                    industryGrowth: data.industryGrowth
+                });
+            }
+
+            // Sort by score (highest first) and return top 3
+            careerScores.sort((a, b) => b.score - a.score);
+            const topCareers = careerScores.slice(0, 3);
+
+            return {
+                topCareers: topCareers,
+                primary: topCareers[0] // Keep backward compatibility
+            };
+        }
+
+        function displayResult(result) {
+            // Show result section
+            document.getElementById('result-section').style.display = 'block';
+
+            const primaryCareer = result.primary;
+
+            // Update career title
+            document.getElementById('career-title').textContent = primaryCareer.career;
+
+            // Update confidence
+            document.getElementById('confidence-fill').style.width = primaryCareer.confidence + '%';
+            document.getElementById('confidence-text').textContent = primaryCareer.confidence + '% Match';
+
+            // Update skills
+            document.getElementById('matching-skills').innerHTML = primaryCareer.matchingSkills
+                .map(skill => `<div class="skill-item">${skill}</div>`)
+                .join('');
+
+            document.getElementById('missing-skills').innerHTML = primaryCareer.missingSkills
+                .map(skill => `<div class="skill-item">${skill}</div>`)
+                .join('');
+
+            // Update roadmap
+            document.getElementById('roadmap').innerHTML = primaryCareer.roadmap
+                .map((step, index) => `
+                    <div class="roadmap-item">
+                        <div class="roadmap-number">${index + 1}</div>
+                        <div class="roadmap-content">${step}</div>
+                    </div>
+                `)
+                .join('');
+
+            // Update salary with personalized predictions
+            const careerInfo = careerData[primaryCareer.career];
+            const confidence = primaryCareer.confidence / 100; // Convert to decimal
+
+            // Check if career info exists and has salary data
+            if (!careerInfo || !careerInfo.entrySalary) {
+                console.error('Career info missing salary data:', careerInfo);
+                document.getElementById('salary-info').innerHTML = `
+                    <p style="color: #ff6b6b;">⚠️ Salary data not available for this career.</p>
+                    <p>Please try a different career prediction.</p>
+                `;
+                return;
+            }
+
+            // Calculate personalized salary predictions based on user profile
+            const baseEntry = careerInfo.entrySalary;
+            const baseMid = careerInfo.midSalary;
+            const baseSenior = careerInfo.seniorSalary;
+
+            // Salary adjustment factors based on confidence score
+            // Higher confidence = higher salary prediction
+            const salaryMultiplier = 0.8 + (confidence * 0.4); // Range: 0.8 to 1.2
+
+            const predictedEntry = Math.round(baseEntry * salaryMultiplier);
+            const predictedMid = Math.round(baseMid * salaryMultiplier);
+            const predictedSenior = Math.round(baseSenior * salaryMultiplier);
+
+            // USD to INR conversion (approximate rate)
+            const usdToInrRate = 83; // 1 USD = 83 INR (approximate current rate)
+
+            function formatINR(amount) {
+                return new Intl.NumberFormat('en-IN').format(amount);
+            }
+
+            const predictedEntryINR = Math.round(predictedEntry * usdToInrRate);
+            const predictedMidINR = Math.round(predictedMid * usdToInrRate);
+            const predictedSeniorINR = Math.round(predictedSenior * usdToInrRate);
+
+            // Experience timeline based on CGPA and skills
+            const cgpa = parseFloat(document.getElementById('cgpa').value);
+            const skillsCount = skills.length;
+            const experienceFactor = (cgpa / 10) * 0.3 + (skillsCount / 5) * 0.7; // 0-1 scale
+
+            const yearsToMid = Math.max(2, Math.round(4 - (experienceFactor * 2))); // 2-4 years
+            const yearsToSenior = yearsToMid + Math.max(3, Math.round(6 - (experienceFactor * 3))); // 5-9 years
+
+            document.getElementById('salary-info').innerHTML = `
+                <div class="salary-prediction">
+                    <div class="salary-header">
+                        <h4 class="salary-title">💰 Personalized Salary Prediction</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.875rem;">Based on your profile and career match</p>
+                    </div>
+                    <div class="salary-breakdown">
+                        <div class="salary-level">
+                            <div class="salary-info">
+                                <div class="salary-position">Entry Level</div>
+                                <div class="salary-timeline">0-2 years experience</div>
+                            </div>
+                            <div class="salary-amounts">
+                                <div class="salary-amount">$${predictedEntry.toLocaleString()} USD</div>
+                                <div class="salary-amount-inr">₹${formatINR(predictedEntryINR)} INR</div>
+                            </div>
+                        </div>
+                        <div class="salary-level">
+                            <div class="salary-info">
+                                <div class="salary-position">Mid Level</div>
+                                <div class="salary-timeline">${yearsToMid}-${yearsToMid + 2} years experience</div>
+                            </div>
+                            <div class="salary-amounts">
+                                <div class="salary-amount">$${predictedMid.toLocaleString()} USD</div>
+                                <div class="salary-amount-inr">₹${formatINR(predictedMidINR)} INR</div>
+                            </div>
+                        </div>
+                        <div class="salary-level">
+                            <div class="salary-info">
+                                <div class="salary-position">Senior Level</div>
+                                <div class="salary-timeline">${yearsToSenior}+ years experience</div>
+                            </div>
+                            <div class="salary-amounts">
+                                <div class="salary-amount">$${predictedSenior.toLocaleString()} USD</div>
+                                <div class="salary-amount-inr">₹${formatINR(predictedSeniorINR)} INR</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="salary-insights">
+                        <div class="insights-title">📊 Prediction Insights</div>
+                        <div class="insight-item">
+                            <strong>Profile:</strong> ${cgpa} CGPA + ${skillsCount} skills = ${primaryCareer.confidence}% match
+                        </div>
+                        <div class="insight-item">
+                            <strong>Currency:</strong> 1 USD ≈ ${usdToInrRate} INR (approximate rate)
+                        </div>
+                        <div class="insight-item">
+                            <strong>Growth:</strong> ${careerInfo.industryGrowth} industry growth potential
+                        </div>
+                        <div class="insight-item">
+                            <strong>Data:</strong> Real market data from Kaggle (2023)
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add alternative career suggestions with salary predictions
+            if (result.topCareers.length > 1) {
+                const alternativesHtml = result.topCareers.slice(1).map((career, index) => {
+                    const altCareerInfo = careerData[career.career];
+                    const altConfidence = career.confidence / 100;
+                    const altSalaryMultiplier = 0.8 + (altConfidence * 0.4);
+                    const altPredictedEntry = Math.round(altCareerInfo.entrySalary * altSalaryMultiplier);
+                    const altPredictedEntryINR = Math.round(altPredictedEntry * usdToInrRate);
+
+                    return `
+                    <div class="alternative-career">
+                        <div class="alternative-title">${index + 2}. ${career.career}</div>
+                        <div class="alternative-confidence">Match: ${career.confidence}% | Skills: ${career.matchingSkills.join(', ') || 'None'}</div>
+                        <div style="margin-top: 0.5rem; font-size: 0.875rem;">
+                            <strong style="color: var(--success-color)">Entry Salary:</strong> $${altPredictedEntry.toLocaleString()} USD / ₹${formatINR(altPredictedEntryINR)} INR
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+
+                document.getElementById('salary-info').innerHTML += `
+                    <div class="alternatives-section">
+                        <div class="alternatives-title">💡 Alternative Career Options</div>
+                        ${alternativesHtml}
+                    </div>
+                `;
+            }
+
+            // Scroll to results
+            document.getElementById('result-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Form submission
+        document.getElementById('career-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Check if dataset is loaded
+            if (Object.keys(careerData).length === 0) {
+                await loadDataset();
+            }
+
+            const cgpa = parseFloat(document.getElementById('cgpa').value);
+            const errorDiv = document.getElementById('error-message');
+
+            // Validation
+            if (isNaN(cgpa) || cgpa < 0 || cgpa > 10) {
+                errorDiv.textContent = 'Please enter a valid CGPA between 0 and 10.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (skills.length === 0) {
+                errorDiv.textContent = 'Please add at least one skill.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+
+            // Predict career
+            console.log('Making prediction with CGPA:', cgpa, 'Skills:', skills);
+            const result = predictCareer(cgpa, skills);
+            console.log('Prediction result:', result);
+            displayResult(result);
+        });
+
+        // Allow adding skills with Enter key
+        document.getElementById('skill-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                addSkill();
+            }
+        });
+    </script>
+</body>
+</html>

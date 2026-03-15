@@ -1,3 +1,4 @@
+import "dotenv/config";
 import type { Express } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
@@ -6,9 +7,6 @@ import { z } from "zod";
 import { setupAuth, hashPassword } from "./auth";
 import { spawn } from "child_process";
 import path from "path";
-import { db } from "./db";
-import { careers, roadmaps } from "@shared/schema";
-import { eq } from "drizzle-orm";
 
 // Helper to run the Python ML script
 async function runMLPrediction(cgpa: number, skills: string[], interests: string[]): Promise<any> {
@@ -72,10 +70,11 @@ export async function registerRoutes(
         res.status(201).json(user);
       });
     } catch (err) {
+      console.error("Registration error:", err);
       if (err instanceof z.ZodError) {
         return res.status(400).json({ message: err.errors[0].message, field: err.errors[0].path.join('.') });
       }
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error", error: String(err) });
     }
   });
 

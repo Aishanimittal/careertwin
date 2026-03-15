@@ -1,51 +1,51 @@
-import { pgTable, text, serial, integer, timestamp, json, doublePrecision } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+export const users = sqliteTable("users", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
   name: text("name"),
   email: text("email"),
-  cgpa: doublePrecision("cgpa"),
-  interests: json("interests").$type<string[]>().default([]),
+  cgpa: real("cgpa"),
+  interests: text("interests", { mode: 'json' }).$type<string[]>().default([]),
   goals: text("goals"),
 });
 
-export const skills = pgTable("skills", {
-  id: serial("id").primaryKey(),
+export const skills = sqliteTable("skills", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").references(() => users.id).notNull(),
   skillName: text("skill_name").notNull(),
   skillLevel: text("skill_level").notNull(), // Beginner, Intermediate, Advanced
 });
 
-export const careers = pgTable("careers", {
-  id: serial("id").primaryKey(),
+export const careers = sqliteTable("careers", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   careerName: text("career_name").notNull(),
   domain: text("domain").notNull(),
   avgSalaryEntry: text("avg_salary_entry").notNull(),
   growthRate: text("growth_rate").notNull(),
 });
 
-export const predictions = pgTable("predictions", {
-  id: serial("id").primaryKey(),
+export const predictions = sqliteTable("predictions", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   userId: integer("user_id").references(() => users.id).notNull(),
   careerId: integer("career_id").references(() => careers.id).notNull(),
-  confidence: doublePrecision("confidence").notNull(),
-  date: timestamp("date").defaultNow(),
-  gaps: json("gaps").$type<string[]>().default([]),
-  matchingSkills: json("matching_skills").$type<string[]>().default([]),
-  progression: json("progression").$type<{level: string, years: string, salary: string}[]>().default([]),
+  confidence: real("confidence").notNull(),
+  date: text("date").default(new Date().toISOString()),
+  gaps: text("gaps", { mode: 'json' }).$type<string[]>().default([]),
+  matchingSkills: text("matching_skills", { mode: 'json' }).$type<string[]>().default([]),
+  progression: text("progression", { mode: 'json' }).$type<{level: string, years: string, salary: string}[]>().default([]),
 });
 
-export const roadmaps = pgTable("roadmaps", {
-  id: serial("id").primaryKey(),
+export const roadmaps = sqliteTable("roadmaps", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   careerId: integer("career_id").references(() => careers.id).notNull(),
-  courses: json("courses").$type<string[]>().default([]),
-  certifications: json("certifications").$type<string[]>().default([]),
-  projects: json("projects").$type<string[]>().default([]),
+  courses: text("courses", { mode: 'json' }).$type<string[]>().default([]),
+  certifications: text("certifications", { mode: 'json' }).$type<string[]>().default([]),
+  projects: text("projects", { mode: 'json' }).$type<string[]>().default([]),
   learningPath: text("learning_path").notNull(),
 });
 

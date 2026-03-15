@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
@@ -22,7 +23,7 @@ app.use(
 
 app.use(express.urlencoded({ extended: false }));
 
-export function log(message: string, source = "express") {
+export function log(message: string, source = "server") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "2-digit",
@@ -85,19 +86,43 @@ app.use((req, res, next) => {
     await setupVite(httpServer, app);
   }
 
-  // ALWAYS serve the app on the port specified in the environment variable PORT
-  // Other ports are firewalled. Default to 5000 if not specified.
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
-  httpServer.listen(
-    {
-      port,
+  // Auto-find free port starting from 5000 (handles conflicts)
+  const basePort = parseInt(process.env.PORT || "5000", 10);
+  let attemptPort = basePort;
+  const maxAttempts = 10;
+
+  const tryListen = () => {
+    const listenOptions: any = {
+      port: attemptPort,
       host: "0.0.0.0",
-      reusePort: true,
-    },
-    () => {
-      log(`serving on port ${port}`);
-    },
-  );
+    };
+    if (process.platform !== "win32") {
+      listenOptions.reusePort = true;
+    }
+
+    const listener = httpServer.listen(listenOptions, () => {
+      log(`serving on port ${attemptPort}`);
+      console.log(`Server URL: http://localhost:${attemptPort}`);
+      // Set process title for easy identification
+      process.title = `CareerTwin-server-${attemptPort}`;
+    });
+
+    listener.on('error', (err: any) => {
+      if (err.code === 'EADDRINUSE') {
+        console.log(`Port ${attemptPort} in use, trying ${attemptPort + 1}...`);
+        attemptPort++;
+        if (attemptPort - basePort < maxAttempts) {
+          listener.close(() => tryListen());
+        } else {
+          console.error(`All ports ${basePort}-${attemptPort} in use. Exiting.`);
+          process.exit(1);
+        }
+      } else {
+        console.error('Listen error:', err);
+        process.exit(1);
+      }
+    });
+  };
+
+  tryListen();
 })();
