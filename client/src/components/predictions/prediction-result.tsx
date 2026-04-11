@@ -9,17 +9,19 @@ type PredictResult = z.infer<typeof api.predictions.predict.responses[200]>;
 
 export function PredictionResult({ result }: { result: PredictResult }) {
   const { prediction, career, roadmap } = result;
+  const confidencePct = Math.round(prediction.confidence * 100);
+  const totalTrackedSkills = prediction.matchingSkills.length + prediction.gaps.length;
 
   return (
     <div className="space-y-8 animate-in-slide-up opacity-0">
       
       {/* Header Card */}
-      <Card className="glass-card overflow-hidden relative border-none bg-gradient-to-br from-primary/5 via-background to-accent/20">
+      <Card className="glass-card overflow-hidden relative border-none bg-gradient-to-br from-primary/10 via-background to-accent/20">
         <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
           <Briefcase className="w-64 h-64 text-primary" />
         </div>
         <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 relative z-10">
-          <CircularProgress value={prediction.confidence * 100} size={160} strokeWidth={14} />
+          <CircularProgress value={confidencePct} size={160} strokeWidth={14} />
           <div className="flex-1 text-center md:text-left space-y-4">
             <div>
               <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-3">
@@ -34,9 +36,23 @@ export function PredictionResult({ result }: { result: PredictResult }) {
               </p>
             </div>
             <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
-              Based on your CGPA and current skills, this role offers an excellent alignment with your interests. 
-              The industry shows a solid {career.growthRate} growth rate over the next 5 years.
+              This recommendation is computed using your CGPA, declared skills, and interests. 
+              Current market outlook for this track is <span className="font-semibold text-foreground">{career.growthRate}</span>.
             </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Match Score</p>
+                <p className="text-lg font-bold text-foreground">{confidencePct}%</p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Matched Skills</p>
+                <p className="text-lg font-bold text-foreground">{prediction.matchingSkills.length}</p>
+              </div>
+              <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Skill Gaps</p>
+                <p className="text-lg font-bold text-foreground">{prediction.gaps.length}</p>
+              </div>
+            </div>
           </div>
         </div>
       </Card>
@@ -45,7 +61,7 @@ export function PredictionResult({ result }: { result: PredictResult }) {
         
         {/* Skills Analysis */}
         <div className="space-y-8">
-          <Card className="p-6 h-full hover-elevate border-border/50 bg-card/50">
+          <Card className="p-6 h-full hover-elevate border-border/60 bg-card/75">
             <div className="flex items-center gap-3 mb-6">
               <div className="p-2 rounded-lg bg-success/10 text-success">
                 <Target className="h-5 w-5" />
@@ -81,11 +97,21 @@ export function PredictionResult({ result }: { result: PredictResult }) {
             ) : (
               <p className="text-muted-foreground text-sm">You have all the core baseline skills needed!</p>
             )}
+
+            <div className="mt-8 rounded-xl border border-border/60 bg-background/70 p-4">
+              <h4 className="text-sm font-semibold text-foreground mb-2">How this score is calculated</h4>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Score combines profile signals: <span className="font-medium text-foreground">skills (60%)</span>,
+                <span className="font-medium text-foreground"> interests (20%)</span>, and
+                <span className="font-medium text-foreground"> CGPA (20%)</span>. 
+                You currently match {prediction.matchingSkills.length} out of {totalTrackedSkills || 0} tracked skills for this role.
+              </p>
+            </div>
           </Card>
         </div>
 
         {/* Roadmap */}
-        <Card className="p-6 hover-elevate border-border/50 bg-card/50">
+        <Card className="p-6 hover-elevate border-border/60 bg-card/75">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-primary/10 text-primary">
               <BookOpen className="h-5 w-5" />
@@ -126,7 +152,7 @@ export function PredictionResult({ result }: { result: PredictResult }) {
       </div>
 
       {/* Progression Timeline */}
-      <Card className="p-6 md:p-8 border-border/50 bg-card/50 overflow-hidden">
+      <Card className="p-6 md:p-8 border-border/60 bg-card/75 overflow-hidden">
         <h3 className="text-2xl font-bold font-display mb-8 text-center">Career Progression</h3>
         <div className="relative">
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-border -translate-x-1/2 hidden md:block"></div>

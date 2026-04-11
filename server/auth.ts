@@ -7,6 +7,7 @@ import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
 import connectPgSimple from "connect-pg-simple";
+import createMemoryStore from "memorystore";
 
 declare global {
   namespace Express {
@@ -16,6 +17,7 @@ declare global {
 
 const scryptAsync = promisify(scrypt);
 const PgStore = connectPgSimple(session);
+const MemoryStore = createMemoryStore(session);
 
 export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
@@ -31,15 +33,23 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export function setupAuth(app: Express) {
+  const usePgSession = process.env.USE_PG_SESSION === "true" && !!process.env.DATABASE_URL;
+
+  const store = usePgSession
+    ? new PgStore({
+        conObject: {
+          connectionString: process.env.DATABASE_URL,
+        },
+      })
+    : new MemoryStore({
+        checkPeriod: 24 * 60 * 60 * 1000,
+      });
+
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "career_twin_super_secret",
     resave: false,
     saveUninitialized: false,
-    store: new PgStore({
-      conObject: {
-        connectionString: process.env.DATABASE_URL,
-      },
-    }),
+    store,
     cookie: {
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     }

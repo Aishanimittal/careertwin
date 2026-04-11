@@ -28,7 +28,7 @@ export default function Skills() {
   return (
     <AppLayout>
       <div className="max-w-4xl mx-auto space-y-8">
-        <div>
+        <div className="animate-in-slide-up opacity-0 stagger-1">
           <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-foreground">
             My Skills
           </h1>
@@ -37,9 +37,9 @@ export default function Skills() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in-fade opacity-0 stagger-2">
           {/* Add Form */}
-          <Card className="md:col-span-1 p-6 border-border/50 bg-card/50 h-fit">
+          <Card className="md:col-span-1 p-6 border-border/60 bg-card/75 h-fit panel-shine hover-elevate">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Plus className="h-5 w-5 text-primary" /> Add Skill
             </h2>
@@ -74,7 +74,7 @@ export default function Skills() {
           </Card>
 
           {/* List */}
-          <Card className="md:col-span-2 p-6 border-border/50 bg-card/50 min-h-[400px]">
+          <Card className="md:col-span-2 p-6 border-border/60 bg-card/75 min-h-[400px] panel-shine hover-elevate">
             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
               <Code2 className="h-5 w-5 text-primary" /> Current Stack
             </h2>
@@ -91,7 +91,7 @@ export default function Skills() {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {skills?.map((skill) => (
-                  <div key={skill.id} className="flex items-center justify-between p-4 rounded-xl border border-border bg-background hover:border-primary/30 transition-colors group">
+                  <div key={skill.id} className="flex items-center justify-between p-4 rounded-xl border border-border bg-background transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md hover:shadow-primary/10 group">
                     <div>
                       <h4 className="font-semibold text-foreground">{skill.skillName}</h4>
                       <p className="text-xs text-muted-foreground">{skill.skillLevel}</p>

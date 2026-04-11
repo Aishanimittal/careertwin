@@ -1,5 +1,3 @@
-Build a complete full-stack web application called "CareerTwin" for career guidance of technical students (CS/IT background). The app helps users predict suitable career paths, analyze skill gaps, and get a personalized long-term learning roadmap with progression stages (Entry → Mid → Senior level).
-
 Strict requirements from my project specification:
 
 1. Project Overview & Objectives

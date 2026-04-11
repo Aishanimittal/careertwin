@@ -20,6 +20,9 @@ export function usePredict() {
         body: JSON.stringify(validated),
         credentials: "include",
       });
+      if (res.status === 401) {
+        throw new Error("Your session expired. Please login again.");
+      }
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
         throw new Error(err.message || "Failed to generate prediction");

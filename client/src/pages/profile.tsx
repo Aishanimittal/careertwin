@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, UserCircle } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function Profile() {
   const { user } = useAuth();
@@ -52,7 +52,7 @@ export default function Profile() {
   return (
     <AppLayout>
       <div className="max-w-3xl mx-auto space-y-8">
-        <div>
+        <div className="animate-in-slide-up opacity-0 stagger-1">
           <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-foreground">
             Profile Settings
           </h1>
@@ -61,14 +61,14 @@ export default function Profile() {
           </p>
         </div>
 
-        <Card className="p-8 border-border/50 bg-card/50 shadow-sm">
+        <Card className="panel-shine animate-in-scale hover-elevate border-border/60 bg-card/75 p-8 shadow-sm opacity-0 stagger-2">
           <div className="flex items-center gap-4 mb-8 pb-8 border-b border-border/50">
-            <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-2xl font-bold text-white shadow-inner">
+            <div className="h-20 w-20 rounded-full bg-gradient-to-br from-primary to-sky-700 flex items-center justify-center text-2xl font-bold text-white shadow-inner transition-transform duration-300 hover:scale-105">
               {user?.name?.charAt(0) || user?.username.charAt(0) || 'U'}
             </div>
             <div>
               <h2 className="text-xl font-bold">{user?.username}</h2>
-              <p className="text-muted-foreground">Base information used for predictions</p>
+              <p className="classic-hover text-muted-foreground">Base information used for predictions</p>
             </div>
           </div>
 

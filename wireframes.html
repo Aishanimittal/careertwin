@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerTwin Wireframes</title>
+<style>
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f0f0; padding: 20px; display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+  .wireframe { background: white; border: 2px solid #333; border-radius: 8px; width: 400px; height: 300px; box-shadow: 5px 5px 15px rgba(0,0,0,0.1); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+  .header { border-bottom: 2px solid #333; padding: 10px; background: #eee; font-weight: bold; text-align: center; }
+  .content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; }
+  .box { border: 2px dashed #999; border-radius: 4px; padding: 10px; text-align: center; color: #666; background: #f9f9f9; }
+  .button { background: #333; color: white; border: none; padding: 8px; border-radius: 4px; text-align: center; width: 100%; display: block; margin-top: auto; }
+  .input { border: 1px solid #999; padding: 8px; border-radius: 4px; width: calc(100% - 18px); margin-bottom:10px; }
+  .sidebar { width: 100px; border-right: 2px solid #333; background: #f5f5f5; padding: 10px; display: flex; flex-direction: column; gap: 10px; font-size: 12px; }
+  .main { flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+  .row { display: flex; height: 100%; }
+  .nav-item { border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+  .title { text-align: center; margin-bottom: 10px; font-weight: bold; font-size: 1.2em; }
+  .caption { text-align: center; font-weight:bold; margin-top: 10px; color: #333; width: 100%; max-width:400px; }
+  .container { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="wireframe">
+    <div class="header">CareerTwin (Figure 1: Auth & Error Prevention)</div>
+    <div class="content" style="justify-content: center; align-items: center;">
+      <div style="width: 80%;">
+        <div style="margin-bottom: 5px;">Email</div>
+        <input class="input" value="user@example.com" disabled>
+        <div style="margin-bottom: 5px;">Password</div>
+        <input class="input" type="password" value="pass" disabled>
+        <div style="color: #d32f2f; font-size: 12px; margin-bottom: 10px; font-weight:bold;">⚠ Error: Password must be 8+ characters</div>
+        <div class="button">Sign In</div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">Figure 1: Authentication Interface (Visibility of System Status & Error Prevention)</div>
+</div>
+
+<div class="container">
+  <div class="wireframe">
+    <div class="header">CareerTwin (Figure 2: Dashboard)</div>
+    <div class="row">
+      <div class="sidebar">
+        <div class="nav-item" style="font-weight: bold;">Dashboard</div>
+        <div class="nav-item">Profile</div>
+        <div class="nav-item">Skills</div>
+        <div class="nav-item">History</div>
+        <div class="nav-item" style="margin-top: auto;">Logout</div>
+      </div>
+      <div class="main">
+        <div style="font-size: 16px; font-weight:bold;">Welcome back, User!</div>
+        <div style="display: flex; gap: 10px; margin-top:10px;">
+          <div class="box" style="flex: 1; padding: 20px 5px;">Go to Skills Assessment</div>
+          <div class="box" style="flex: 1; padding: 20px 5px;">View History</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">Figure 2: Main Dashboard (Task-Oriented Workflow)</div>
+</div>
+
+<div class="container">
+  <div class="wireframe">
+    <div class="header">CareerTwin (Figure 3: Skills)</div>
+    <div class="row">
+      <div class="sidebar">
+        <div class="nav-item">Dashboard</div>
+        <div class="nav-item" style="font-weight: bold;">Skills</div>
+        <div class="nav-item">...</div>
+      </div>
+      <div class="main">
+        <div style="font-weight:bold;">Assess Your Skills</div>
+        <div style="font-size:12px; color:#666;">Select your proficiency:</div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <label><input type="radio" checked> Python</label>
+            <label><input type="radio"> JavaScript</label>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+            <span style="font-size:12px;">Level:</span>
+            <input type="range" min="1" max="100" value="70">
+        </div>
+        <div class="button" style="margin-top:20px; background:#0056b3; opacity:0.8;">
+            ↻ Predicting... (Processing)
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="caption">Figure 3: Skills Assessment (Visibility of System Status & Feedback)</div>
+</div>
+
+<div class="container">
+  <div class="wireframe">
+    <div class="header">CareerTwin (Figure 4: History)</div>
+    <div class="row">
+      <div class="sidebar">
+        <div class="nav-item">Dashboard</div>
+        <div class="nav-item">Skills</div>
+        <div class="nav-item" style="font-weight: bold;">History</div>
+        <div class="nav-item">...</div>
+      </div>
+      <div class="main">
+        <div style="font-weight:bold; margin-bottom:10px;">Prediction History</div>
+        <table style="width:100%; font-size:12px; border-collapse: collapse;">
+            <tr style="background:#eee; text-align:left;">
+                <th style="padding:4px;">Date</th><th style="padding:4px;">Result</th>
+            </tr>
+            <tr>
+                <td style="padding:4px; border-bottom:1px solid #ccc;">2026-03-15</td>
+                <td style="padding:4px; border-bottom:1px solid #ccc;">Software Engineer</td>
+            </tr>
+            <tr>
+                <td style="padding:4px; border-bottom:1px solid #ccc;">2026-03-10</td>
+                <td style="padding:4px; border-bottom:1px solid #ccc;">Data Analyst</td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="caption">Figure 4: Prediction History (Consistency against Dashboard layout)</div>
+</div>
+
+</body>
+</html>

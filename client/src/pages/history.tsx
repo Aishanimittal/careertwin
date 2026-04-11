@@ -20,7 +20,7 @@ export default function History() {
     <AppLayout>
       <div className="space-y-8">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="animate-in-slide-up opacity-0 stagger-1">
             <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-foreground">
               Prediction History
             </h1>
@@ -53,11 +53,11 @@ export default function History() {
             <p className="mt-2 text-sm text-muted-foreground">Generate a prediction from the dashboard first.</p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in-fade opacity-0 stagger-2">
             {history?.map((item) => (
               <Card 
                 key={item.prediction.id} 
-                className="p-6 cursor-pointer hover-elevate border-border/50 bg-card/50 transition-all group"
+                className="p-6 cursor-pointer hover-elevate border-border/60 bg-card/75 transition-all group panel-shine"
                 onClick={() => setSelectedItem(item)}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -68,7 +68,7 @@ export default function History() {
                     {item.prediction.date ? format(new Date(item.prediction.date), "MMM d, yyyy") : ""}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold font-display group-hover:text-primary transition-colors">
+                <h3 className="classic-hover inline-block text-xl font-bold font-display group-hover:text-primary transition-colors">
                   {item.career.careerName}
                 </h3>
                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">

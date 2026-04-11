@@ -47,7 +47,7 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <div className="space-y-8">
-        <div>
+        <div className="animate-in-slide-up opacity-0 stagger-1">
           <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-foreground">
             Welcome back, {user?.name || user?.username}
           </h1>
@@ -57,15 +57,15 @@ export default function Dashboard() {
         </div>
 
         {!result ? (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-1 p-6 border-border/50 bg-card/50 shadow-sm h-fit">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-in-fade opacity-0 stagger-2">
+            <Card className="panel-shine hover-elevate lg:col-span-1 h-fit border-border/60 bg-card/75 p-6 shadow-sm">
               <div className="mb-6 pb-6 border-b border-border/50">
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
                   <Compass className="h-6 w-6" />
                 </div>
                 <h2 className="text-xl font-display font-bold">New Prediction</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  We use your profile data to generate a roadmap. You can tweak parameters here for this run.
+                  We evaluate your skills, interests, and CGPA to generate a focused career recommendation and roadmap.
                 </p>
               </div>
 
@@ -123,22 +123,44 @@ export default function Dashboard() {
                   disabled={isPending || !skills?.length}
                 >
                   {isPending ? (
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Building your roadmap...
+                    </>
                   ) : (
                     "Generate Path"
                   )}
                 </Button>
+                {isPending && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    This can take a few seconds while we evaluate your profile and generate recommendations.
+                  </p>
+                )}
               </form>
             </Card>
 
-            <div className="lg:col-span-2 flex flex-col justify-center items-center p-12 text-center border-2 border-dashed border-border/50 rounded-2xl bg-muted/20">
+            <div className="lg:col-span-2 flex flex-col justify-center items-center p-12 text-center border-2 border-dashed border-border/50 rounded-2xl bg-muted/20 animate-in-slide-up opacity-0 stagger-3">
               <div className="w-24 h-24 rounded-full bg-primary/5 flex items-center justify-center mb-6">
                 <Compass className="h-10 w-10 text-primary/40" />
               </div>
-              <h3 className="text-2xl font-display font-bold text-muted-foreground">Ready to explore?</h3>
+              <h3 className="classic-hover text-2xl font-display font-bold text-muted-foreground">Ready to explore?</h3>
               <p className="text-muted-foreground mt-2 max-w-md mx-auto">
-                Fill out the parameters on the left and hit generate. Our engine will analyze your profile against thousands of career trajectories.
+                Fill out the form to generate a recommendation based on transparent scoring logic and role-specific requirements.
               </p>
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-xl text-left">
+                <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Weight 1</p>
+                  <p className="text-sm font-semibold text-foreground">Skills: 60%</p>
+                </div>
+                <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Weight 2</p>
+                  <p className="text-sm font-semibold text-foreground">Interests: 20%</p>
+                </div>
+                <div className="rounded-lg border border-border/60 bg-background/70 px-3 py-2">
+                  <p className="text-xs text-muted-foreground">Weight 3</p>
+                  <p className="text-sm font-semibold text-foreground">CGPA: 20%</p>
+                </div>
+              </div>
             </div>
           </div>
         ) : (

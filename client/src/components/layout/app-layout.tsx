@@ -31,11 +31,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-background/50">
-        <Sidebar variant="inset" className="border-r border-border/50 bg-card/50 backdrop-blur-xl">
+      <div className="relative flex min-h-screen w-full overflow-hidden bg-background/40">
+        <div className="pointer-events-none absolute -top-20 left-8 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-0 right-8 h-80 w-80 rounded-full bg-cyan-400/10 blur-3xl" />
+        <Sidebar variant="inset" className="z-10 border-r border-border/60 bg-card/70 backdrop-blur-xl">
           <SidebarHeader className="p-6">
-            <Link href="/" className="flex items-center gap-3 transition-opacity hover:opacity-80">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-purple-600 shadow-lg shadow-primary/20">
+            <Link href="/" className="classic-hover flex items-center gap-3 transition-opacity hover:opacity-90">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-sky-700 shadow-lg shadow-primary/20 transition-transform duration-300 hover:rotate-3">
                 <Sparkles className="h-5 w-5 text-white" />
               </div>
               <span className="font-display text-xl font-bold tracking-tight text-foreground">
@@ -55,7 +57,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                       <SidebarMenuButton 
                         asChild 
                         isActive={location === item.url}
-                        className="rounded-lg transition-all hover:bg-primary/5 data-[active=true]:bg-primary/10 data-[active=true]:text-primary data-[active=true]:font-medium"
+                        className="rounded-lg transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/10 hover:shadow-sm data-[active=true]:bg-primary/15 data-[active=true]:text-primary data-[active=true]:font-semibold"
                       >
                         <Link href={item.url} className="flex items-center gap-3 px-3 py-2.5">
                           <item.icon className="h-4 w-4" />
@@ -91,12 +93,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </SidebarFooter>
         </Sidebar>
 
-        <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 px-6 backdrop-blur-md">
+        <main className="z-10 flex min-w-0 flex-1 flex-col overflow-hidden">
+          <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-border/40 bg-background/75 px-6 backdrop-blur-md">
             <SidebarTrigger className="-ml-2 hover:bg-accent/50" />
             <div className="flex-1" />
           </header>
-          <div className="flex-1 overflow-y-auto p-6 md:p-8 lg:p-10 animate-in-fade">
+          <div className="animate-in-fade flex-1 overflow-y-auto p-6 md:p-8 lg:p-10">
             <div className="mx-auto max-w-6xl w-full">
               {children}
             </div>

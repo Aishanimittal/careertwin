@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Sparkles, ArrowRight, Loader2 } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 
 export default function AuthPage() {
   const [, setLocation] = useLocation();
@@ -43,7 +43,7 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-background">
       {/* Left side - Branding */}
-      <div className="relative hidden lg:flex flex-col justify-between p-12 bg-zinc-950 text-white overflow-hidden">
+      <div className="relative hidden overflow-hidden bg-zinc-950 p-12 text-white lg:flex lg:flex-col lg:justify-between">
         {/* Unsplash beautiful abstract architectural/career paths visual */}
         <img 
           src="https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1920&q=80" 
@@ -52,9 +52,13 @@ export default function AuthPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent" />
         
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
-            <Sparkles className="h-6 w-6 text-white" />
+        <div className="relative z-10 flex items-center gap-3 animate-in-fade">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary shadow-lg shadow-primary/30 transition-transform duration-300 hover:scale-105">
+            <img
+              src="/favicon.png"
+              alt="CareerTwin logo"
+              className="h-7 w-7 object-contain"
+            />
           </div>
           <span className="font-display text-2xl font-bold tracking-tight">CareerTwin</span>
         </div>
@@ -80,7 +84,7 @@ export default function AuthPage() {
       {/* Right side - Form */}
       <div className="flex items-center justify-center p-8">
         <div className="w-full max-w-md space-y-8 animate-in-fade">
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-left animate-in-slide-up opacity-0 stagger-1">
             <h2 className="text-3xl font-display font-bold text-foreground tracking-tight">
               {isLogin ? "Welcome back" : "Create an account"}
             </h2>
@@ -89,7 +93,7 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <Card className="p-8 border-border/50 shadow-xl shadow-black/5 bg-card/50 backdrop-blur-sm">
+          <Card className="panel-shine animate-in-scale p-8 border-border/50 bg-card/70 shadow-xl shadow-black/10 backdrop-blur-sm opacity-0 stagger-2">
             <form onSubmit={handleSubmit} className="space-y-5">
               {!isLogin && (
                 <div className="space-y-2">
@@ -120,7 +124,7 @@ export default function AuthPage() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">Password</Label>
-                  {isLogin && <a href="#" className="text-xs font-medium text-primary hover:underline">Forgot password?</a>}
+                  {isLogin && <a href="#" className="classic-hover text-xs font-medium text-primary">Forgot password?</a>}
                 </div>
                 <Input 
                   id="password" 
@@ -154,7 +158,7 @@ export default function AuthPage() {
               <button 
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="font-semibold text-primary hover:underline transition-all"
+                className="classic-hover font-semibold text-primary"
               >
                 {isLogin ? "Sign up" : "Sign in"}
               </button>
