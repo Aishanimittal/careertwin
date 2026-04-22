@@ -1,11 +1,18 @@
 import "dotenv/config";
-import type { Express } from "express";
+import type { Express, Request } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
+import type { User as SelectUser } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, hashPassword } from "./auth";
 import passport from "passport";
+
+declare global {
+  namespace Express {
+    interface User extends SelectUser {}
+  }
+}
 
 type MLPrediction = {
   career: string;
@@ -118,6 +125,10 @@ function normalizeToken(token: string): string {
   return token.trim().toLowerCase();
 }
 
+function getAuthenticatedUserId(req: Request): number {
+  return (req.user as { id: number }).id;
+}
+
 function computePrediction(cgpa: number, skills: string[], interests: string[]): MLPrediction {
   const normalizedSkills = skills.map(normalizeToken);
   const normalizedInterests = interests.map(normalizeToken);
@@ -224,12 +235,13 @@ export async function registerRoutes(
   // User Profile
   app.put(api.users.updateProfile.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const authUserId = getAuthenticatedUserId(req);
     
     try {
       const input = api.users.updateProfile.input.parse(req.body);
       const userId = Number(req.params.id);
       
-      if (req.user.id !== userId) return res.status(401).json({ message: "Unauthorized" });
+      if (authUserId !== userId) return res.status(401).json({ message: "Unauthorized" });
       
       const user = await storage.updateUser(userId, input);
       res.status(200).json(user);
@@ -244,17 +256,19 @@ export async function registerRoutes(
   // Skills
   app.get(api.skills.list.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-    const skills = await storage.getSkills(req.user.id);
+    const authUserId = getAuthenticatedUserId(req);
+    const skills = await storage.getSkills(authUserId);
     res.status(200).json(skills);
   });
 
   app.post(api.skills.create.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const authUserId = getAuthenticatedUserId(req);
     try {
       const input = api.skills.create.input.parse(req.body);
       const skill = await storage.createSkill({
         ...input,
-        userId: req.user.id
+        userId: authUserId
       });
       res.status(201).json(skill);
     } catch (err) {
@@ -265,13 +279,15 @@ export async function registerRoutes(
 
   app.delete(api.skills.delete.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
-    await storage.deleteSkill(Number(req.params.id), req.user.id);
+    const authUserId = getAuthenticatedUserId(req);
+    await storage.deleteSkill(Number(req.params.id), authUserId);
     res.status(204).send();
   });
 
   // Predictions (ML Endpoint)
   app.post(api.predictions.predict.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const authUserId = getAuthenticatedUserId(req);
     
     try {
       const input = api.predictions.predict.input.parse(req.body);
@@ -302,7 +318,7 @@ export async function registerRoutes(
       
       // Save Prediction
       const prediction = await storage.createPrediction({
-        userId: req.user.id,
+        userId: authUserId,
         careerId: career.id,
         confidence: Math.min(1, Math.max(0, mlResult.confidence)),
         gaps: mlResult.gaps,
@@ -320,8 +336,9 @@ export async function registerRoutes(
 
   app.get(api.predictions.history.path, async (req, res) => {
     if (!req.isAuthenticated()) return res.status(401).json({ message: "Unauthorized" });
+    const authUserId = getAuthenticatedUserId(req);
     
-    const predictions = await storage.getPredictions(req.user.id);
+    const predictions = await storage.getPredictions(authUserId);
     const history = [];
     
     for (const pred of predictions) {

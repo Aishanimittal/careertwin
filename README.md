@@ -1,120 +1,156 @@
-CareerTwin
+# CareerTwin
 
-CareerTwin is a full-stack career guidance platform that helps students and professionals identify suitable career paths based on their skills, interests, and academic profile. It provides personalized recommendations, skill-gap analysis, and learning roadmaps with a modern React UI and a Node/Express API.
+CareerTwin is a full-stack career guidance platform that helps students and professionals identify career paths based on academic profile, skills, and interests.
 
-Overview
+It includes:
+- Career prediction with confidence score
+- Skill-gap analysis and matching-skills report
+- Suggested courses, certifications, and project roadmap
+- Authenticated user flow (register/login/logout)
+- Prediction history tracking
 
-- Personalized career prediction with confidence scoring
-- Skill-gap analysis and learning roadmap suggestions
-- Authenticated dashboard with profile, skills, and history
-- REST API with input validation
-- Modular frontend and backend, ready for extension
+## Tech Stack
 
-Tech Stack
-
-- Frontend: React, TypeScript, Vite, Tailwind CSS, shadcn/ui
+- Frontend: React, TypeScript, Vite, Tailwind CSS, shadcn/ui, Radix UI
 - Backend: Node.js, Express, Passport (local auth), Zod
-- State/API: React Query
-- Storage: In-memory store (MemStorage) with schema definitions for persistence
-- Optional: Python ML prototype script for offline experiments
+- API/Data State: TanStack React Query
+- Storage (current): in-memory store
+- Sessions: Memory store by default, optional PostgreSQL session store
+- Optional ML prototype: Python (scikit-learn, numpy, scipy)
 
-Getting Started
+## Project Structure
 
-Prerequisites
+```text
+CareerTwin/
+  client/            React app (pages, components, hooks, UI)
+  server/            Express API, auth, prediction logic, storage
+  shared/            Shared schemas and typed route contracts
+  script/            Build script
+  sqlite/            Optional local DB-related assets
+  ml_predict.py      Optional standalone Python prediction prototype
+  career-dataset.json
+  package.json
+```
 
-- Node.js 18+ (recommended)
+## Prerequisites
+
+- Node.js 18+
 - npm 9+
 
-Install
+Optional for ML prototype:
+- Python 3.11+
 
-1. Install dependencies
+## Quick Start
 
-	 npm install
+1. Install Node dependencies
 
-2. Start development server
+```bash
+npm install
+```
 
-	 npm run dev
+2. Run in development
 
-The app starts on port 5000 by default and auto-increments if the port is busy.
+```bash
+npm run dev
+```
 
-Build and Run
+3. Open app
 
-- Build: npm run build
-- Start production server: npm start
-- Type check: npm run check
+```text
+http://localhost:5000
+```
 
-Environment Variables
+The server starts at port 5000 by default and automatically tries next ports if 5000 is busy.
 
-Create a .env file if you need to override defaults.
+## Scripts
 
-- SESSION_SECRET: Session signing secret for Express sessions
-- PORT: Base port for server (default: 5000)
-- USE_PG_SESSION: Set to true to use Postgres-backed session store
-- DATABASE_URL: Postgres connection string when USE_PG_SESSION is true
+- `npm run dev` - start dev server
+- `npm run build` - production build
+- `npm start` - run production build output
+- `npm run check` - TypeScript type-check
 
-Demo Account
+## Environment Variables
 
-The in-memory store ships with a demo user for quick testing:
+Create a `.env` file in the project root (optional):
 
-- Username: student_demo
-- Password: Career@2026
+- `SESSION_SECRET` - secret used by `express-session`
+- `PORT` - base server port (default: `5000`)
+- `USE_PG_SESSION` - set `true` to use PostgreSQL-backed sessions
+- `DATABASE_URL` - PostgreSQL connection string (required if `USE_PG_SESSION=true`)
 
-Application Routes
+## Demo Credentials
 
-- /login, /register
-- / (Dashboard)
-- /profile
-- /skills
-- /history
+Default demo account in memory store:
 
-API Endpoints
+- Username: `student_demo`
+- Password: `Career@2026`
 
-Authentication
+## App Routes
 
-- POST /api/register
-- POST /api/login
-- POST /api/logout
-- GET /api/user
+- `/login`
+- `/register`
+- `/` (dashboard)
+- `/profile`
+- `/skills`
+- `/history`
 
-User Profile
+## API Endpoints
 
-- PUT /api/users/:id
+Authentication:
+- `POST /api/register`
+- `POST /api/login`
+- `POST /api/logout`
+- `GET /api/user`
 
-Skills
+Profile:
+- `PUT /api/users/:id`
 
-- GET /api/skills
-- POST /api/skills
-- DELETE /api/skills/:id
+Skills:
+- `GET /api/skills`
+- `POST /api/skills`
+- `DELETE /api/skills/:id`
 
-Predictions
+Predictions:
+- `POST /api/predict`
+- `GET /api/predictions`
 
-- POST /api/predict
-- GET /api/predictions
+## How Prediction Confidence Is Calculated
 
-Project Structure
+Confidence combines three weighted signals:
 
-root/
-	client/           React frontend (pages, components, hooks)
-	server/           Express server, auth, API routes
-	shared/           Shared schema and typed API definitions
-	sqlite/           Local SQLite assets (optional)
-	script/           Build scripts
-	ml_predict.py     Python ML prototype (optional)
-	index.html        Static prototype entry
-	README-simple.md  Simple single-page version docs
+- Skills match: 60%
+- Interest keyword match: 20%
+- CGPA score: 20%
 
-Notes on Storage
+Formula used in server logic:
 
-The server currently uses an in-memory store (MemStorage) for users, skills, and predictions. The Drizzle schema in shared/schema.ts is ready for database-backed storage if you want to expand persistence.
+```text
+confidence = clamp(0.6*skillScore + 0.2*interestScore + 0.2*cgpaScore, 0.2, 0.96)
+```
 
-Python ML Prototype (Optional)
+Where:
+- `skillScore = matchingRequiredSkills / totalRequiredSkills`
+- `interestScore = matchedHints / totalHints`
+- `cgpaScore = clamp(cgpa/10, 0, 1)`
 
-The file ml_predict.py is a standalone ML prototype that reads JSON from stdin and outputs a prediction. It is not wired into the Node API by default.
+## Storage Notes
 
-Example usage:
+- Current app data uses an in-memory store (users, skills, predictions).
+- Session storage can use PostgreSQL when enabled.
+- Shared schema/types are defined in `shared/schema.ts` for future DB-backed expansion.
 
-	echo '{"cgpa":8.2,"skills":["Python","SQL"]}' | python ml_predict.py
+## Optional Python ML Prototype
 
-Simple Version
+`ml_predict.py` is standalone and not wired to the Node API by default.
 
-If you want the single-page static version with a Kaggle dataset, see README-simple.md.
+Example:
+
+```bash
+echo '{"cgpa":8.2,"skills":["Python","SQL"],"interests":["ai"]}' | python ml_predict.py
+```
+
+## Troubleshooting
+
+- If login fails, verify cookies/session are enabled in browser and API requests include credentials.
+- If port is busy, app will auto-try the next ports and print the final URL in terminal.
+- If types fail, run `npm run check` to view TypeScript diagnostics.

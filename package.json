@@ -1,12 +1,23 @@
 {
   "name": "rest-express",
   "version": "1.0.0",
+  "description": "CareerTwin full-stack career guidance platform",
   "type": "module",
   "license": "MIT",
+  "author": "Second Year Student",
+  "keywords": [
+    "career",
+    "prediction",
+    "education",
+    "react",
+    "express"
+  ],
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
+    "simple:dev": "python -m http.server 8000",
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
+    "simple:start": "python -m http.server 8000",
     "check": "tsc"
   },
   "dependencies": {
